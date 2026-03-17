@@ -1,0 +1,1817 @@
+﻿gsap.registerPlugin(ScrollTrigger);
+
+let scroll;
+
+const body = document.body;
+const select = (e) => document.querySelector(e);
+const selectAll = (e) => document.querySelectorAll(e);
+//const container = select('.site-main');
+let stickyCursorTicker = null;
+let scheduledScrollRefreshRaf = null;
+let scheduledScrollRefreshTimeout = null;
+
+function scheduleScrollRefresh(delay = 0) {
+    const runRefresh = function() {
+        if (typeof ScrollTrigger !== 'undefined' && typeof ScrollTrigger.refresh === 'function') {
+            ScrollTrigger.refresh();
+        }
+        if (scroll && typeof scroll.update === 'function') {
+            scroll.update();
+        }
+        scheduledScrollRefreshRaf = null;
+    };
+
+    const queueRefresh = function() {
+        if (scheduledScrollRefreshRaf) {
+            cancelAnimationFrame(scheduledScrollRefreshRaf);
+        }
+        scheduledScrollRefreshRaf = requestAnimationFrame(function() {
+            scheduledScrollRefreshRaf = requestAnimationFrame(runRefresh);
+        });
+    };
+
+    if (delay > 0) {
+        if (scheduledScrollRefreshTimeout) {
+            clearTimeout(scheduledScrollRefreshTimeout);
+        }
+        scheduledScrollRefreshTimeout = window.setTimeout(function() {
+            scheduledScrollRefreshTimeout = null;
+            queueRefresh();
+        }, delay);
+        return;
+    }
+
+    queueRefresh();
+}
+
+initCLSDebugObserver();
+initPageTransitions();
+
+// Animation - First Page Load
+function initLoaderHome() {
+
+    var tl = gsap.timeline();
+
+    tl.set(".loading-screen", {
+        top: "0",
+    });
+
+    tl.set("main .once-in", {
+        autoAlpha: 0
+    });
+
+    tl.set(".loading-words", {
+        opacity: 0,
+        y: -50
+    });
+
+    tl.set(".loading-words .active", {
+        display: "none",
+    });
+
+    tl.set(".loading-words .home-active, .loading-words .home-active-last", {
+        display: "block",
+        opacity: 0
+    });
+
+    tl.set(".loading-words .home-active-first", {
+        opacity: 1,
+    });
+
+    if (window.innerWidth > 540) {
+        tl.set(".loading-screen .rounded-div-wrap.bottom", {
+            height: "10vh",
+        });
+    } else {
+        tl.set(".loading-screen .rounded-div-wrap.bottom", {
+            height: "5vh",
+        });
+    }
+
+    tl.set("html", {
+        cursor: "wait"
+    });
+
+    tl.call(function() {
+        scroll.stop();
+    });
+
+    tl.to(".loading-words", {
+        duration: .8,
+        opacity: 1,
+        y: -50,
+        ease: "Power4.easeOut",
+        delay: .5
+    });
+
+    tl.to(".loading-words .home-active", {
+        duration: .01,
+        opacity: 1,
+        stagger: .15,
+        ease: "none",
+        onStart: homeActive
+    }, "=-.4");
+
+    function homeActive() {
+        gsap.to(".loading-words .home-active", {
+            duration: .01,
+            opacity: 0,
+            stagger: .15,
+            ease: "none",
+            delay: .15
+        });
+    }
+
+    tl.to(".loading-words .home-active-last", {
+        duration: .01,
+        opacity: 1,
+        delay: .15
+    });
+
+    tl.to(".loading-screen", {
+        duration: .8,
+        top: "-100%",
+        ease: "Power4.easeInOut",
+        delay: .2
+    });
+
+    tl.to(".loading-screen .rounded-div-wrap.bottom", {
+        duration: 1,
+        height: "0vh",
+        ease: "Power4.easeInOut"
+    }, "=-.8");
+
+    tl.to(".loading-words", {
+        duration: .3,
+        opacity: 0,
+        ease: "linear"
+    }, "=-.8");
+
+    tl.set(".loading-screen", {
+        top: "calc(-100%)"
+    });
+
+    tl.set(".loading-screen .rounded-div-wrap.bottom", {
+        height: "0vh"
+    });
+
+    tl.to("main .once-in", {
+        duration: 1.5,
+        autoAlpha: 1,
+        stagger: .07,
+        ease: "Expo.easeOut",
+        clearProps: true
+    }, "=-.8");
+
+    tl.set("html", {
+        cursor: "auto"
+    }, "=-1.2");
+
+    tl.call(function() {
+        scroll.start();
+    });
+
+}
+
+// Animation - First Page Load
+function initLoader() {
+
+    var tl = gsap.timeline();
+
+    tl.set(".loading-screen", {
+        top: "0",
+    });
+
+    tl.set("main .once-in", {
+        autoAlpha: 0
+    });
+
+    tl.set(".loading-words", {
+        opacity: 1,
+        y: -50
+    });
+
+    if (window.innerWidth > 540) {
+        tl.set(".loading-screen .rounded-div-wrap.bottom", {
+            height: "10vh",
+        });
+    } else {
+        tl.set(".loading-screen .rounded-div-wrap.bottom", {
+            height: "5vh",
+        });
+    }
+
+    tl.set("html", {
+        cursor: "wait"
+    });
+
+    tl.to(".loading-screen", {
+        duration: .8,
+        top: "-100%",
+        ease: "Power4.easeInOut",
+        delay: .5
+    });
+
+    tl.to(".loading-screen .rounded-div-wrap.bottom", {
+        duration: 1,
+        height: "0vh",
+        ease: "Power4.easeInOut"
+    }, "=-.8");
+
+    tl.to(".loading-words", {
+        duration: .3,
+        opacity: 0,
+        ease: "linear",
+    }, "=-.8");
+
+    tl.set(".loading-screen", {
+        top: "calc(-100%)"
+    });
+
+    tl.set(".loading-screen .rounded-div-wrap.bottom", {
+        height: "0vh"
+    });
+
+    tl.to("main .once-in", {
+        duration: 1,
+        autoAlpha: 1,
+        stagger: .05,
+        ease: "Expo.easeOut",
+        clearProps: "true"
+    }, "=-.8");
+
+    tl.set("html", {
+        cursor: "auto",
+    }, "=-.8");
+
+}
+
+
+// Animation - Page transition In
+function pageTransitionIn() {
+    var tl = gsap.timeline();
+
+    tl.call(function() {
+        scroll.stop();
+    });
+
+    tl.set(".loading-screen", {
+        top: "100%"
+    });
+
+    tl.set(".loading-words", {
+        opacity: 0,
+        y: 0
+    });
+
+    tl.set("html", {
+        cursor: "wait"
+    });
+
+    if (window.innerWidth > 540) {
+        tl.set(".loading-screen .rounded-div-wrap.bottom", {
+            height: "10vh",
+        });
+    } else {
+        tl.set(".loading-screen .rounded-div-wrap.bottom", {
+            height: "5vh",
+        });
+    }
+
+    tl.to(".loading-screen", {
+        duration: .5,
+        top: "0%",
+        ease: "Power4.easeIn"
+    });
+
+    if (window.innerWidth > 540) {
+        tl.to(".loading-screen .rounded-div-wrap.top", {
+            duration: .4,
+            height: "10vh",
+            ease: "Power4.easeIn"
+        }, "=-.5");
+    } else {
+        tl.to(".loading-screen .rounded-div-wrap.top", {
+            duration: .4,
+            height: "10vh",
+            ease: "Power4.easeIn"
+        }, "=-.5");
+    }
+
+    tl.to(".loading-words", {
+        duration: .8,
+        opacity: 1,
+        y: -50,
+        ease: "Power4.easeOut",
+        delay: .05
+    });
+
+    tl.set(".loading-screen .rounded-div-wrap.top", {
+        height: "0vh"
+    });
+
+    tl.to(".loading-screen", {
+        duration: .8,
+        top: "-100%",
+        ease: "Power3.easeInOut"
+    }, "=-.2");
+
+    tl.to(".loading-words", {
+        duration: .6,
+        opacity: 0,
+        ease: "linear"
+    }, "=-.8");
+
+    tl.to(".loading-screen .rounded-div-wrap.bottom", {
+        duration: .85,
+        height: "0",
+        ease: "Power3.easeInOut"
+    }, "=-.6");
+
+    tl.set("html", {
+        cursor: "auto"
+    }, "=-0.6");
+
+    if (window.innerWidth > 540) {
+        tl.set(".loading-screen .rounded-div-wrap.bottom", {
+            height: "10vh"
+        });
+    } else {
+        tl.set(".loading-screen .rounded-div-wrap.bottom", {
+            height: "5vh"
+        });
+    }
+
+    tl.set(".loading-screen", {
+        top: "100%"
+    });
+
+    tl.set(".loading-words", {
+        opacity: 0,
+    });
+
+}
+
+
+// Animation - Page transition Out
+function pageTransitionOut() {
+    var tl = gsap.timeline();
+
+    tl.set("main .once-in", {
+        autoAlpha: 0
+    });
+
+    tl.call(function() {
+        scroll.start();
+    });
+
+    tl.to("main .once-in", {
+        duration: 1,
+        autoAlpha: 1,
+        stagger: .05,
+        ease: "Expo.easeOut",
+        delay: .8,
+        clearProps: "true"
+    });
+
+}
+
+function initPageTransitions() {
+
+    //let scroll;
+
+    // do something before the transition starts
+    barba.hooks.before(() => {
+        select('html').classList.add('is-transitioning');
+    });
+
+    // do something after the transition finishes
+    barba.hooks.after(() => {
+        select('html').classList.remove('is-transitioning');
+        // reinit locomotive scroll
+        scroll.init();
+        scroll.stop();
+    });
+
+    // scroll to the top of the page
+    barba.hooks.enter(() => {
+        scroll.destroy();
+    });
+
+    // scroll to the top of the page
+    barba.hooks.afterEnter(() => {
+        window.scrollTo(0, 0);
+        initCookieViews();
+        scheduleScrollRefresh();
+        scheduleScrollRefresh(250);
+    });
+
+    if (window.innerWidth > 540) {
+        barba.hooks.leave(() => {
+            $(".btn-hamburger, .btn-menu").removeClass('active');
+            $("main").removeClass('nav-active');
+        });
+    }
+
+
+    barba.init({
+        sync: true,
+        debug: false,
+        timeout: 7000,
+        transitions: [{
+                name: 'default',
+                once(data) {
+                    // do something once on the initial page load
+                    initSmoothScroll(data.next.container);
+                    initScript();
+                    initCookieViews();
+                    initLoader();
+                },
+                async leave(data) {
+                    // animate loading screen in
+                    pageTransitionIn(data.current);
+                    await delay(495);
+                    data.current.container.remove();
+                },
+                async enter(data) {
+                    // animate loading screen away
+                    pageTransitionOut(data.next);
+                    initNextWord(data);
+                },
+                async beforeEnter(data) {
+                    ScrollTrigger.getAll().forEach(t => t.kill());
+                    scroll.destroy();
+                    initSmoothScroll(data.next.container);
+                    initScript();
+                },
+            },
+            {
+                name: 'to-home',
+                from: {},
+                to: {
+                    namespace: ['home']
+                },
+                once(data) {
+                    // do something once on the initial page load
+                    initSmoothScroll(data.next.container);
+                    initScript();
+                    initCookieViews();
+                    initLoaderHome();
+                },
+            }
+        ]
+    });
+
+    function initSmoothScroll(container) {
+
+        scroll = new LocomotiveScroll({
+            el: container.querySelector('[data-scroll-container]'),
+            smooth: true,
+        });
+
+        if (window.__mattiaLocoResizeHandler) {
+            window.removeEventListener('resize', window.__mattiaLocoResizeHandler);
+        }
+        window.__mattiaLocoResizeHandler = () => {
+            if (scroll && typeof scroll.update === 'function') {
+                scroll.update();
+            }
+        };
+        window.addEventListener('resize', window.__mattiaLocoResizeHandler, {
+            passive: true
+        });
+
+        scroll.on("scroll", () => ScrollTrigger.update());
+
+        ScrollTrigger.scrollerProxy('[data-scroll-container]', {
+            scrollTop(value) {
+                return arguments.length ? scroll.scrollTo(value, 0, 0) : scroll.scroll.instance.scroll.y;
+            }, // we don't have to define a scrollLeft because we're only scrolling vertically.
+            getBoundingClientRect() {
+                return {
+                    top: 0,
+                    left: 0,
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                };
+            },
+            // LocomotiveScroll handles things completely differently on mobile devices - it doesn't even transform the container at all! So to get the correct behavior and avoid jitters, we should pin things with position: fixed on mobile. We sense it by checking to see if there's a transform applied to the container (the LocomotiveScroll-controlled element).
+            pinType: container.querySelector('[data-scroll-container]').style.transform ? "transform" : "fixed"
+        });
+
+        ScrollTrigger.defaults({
+            scroller: document.querySelector('[data-scroll-container]'),
+        });
+
+        /**
+         * Remove Old Locomotive Scrollbar
+         */
+
+        const scrollbar = selectAll('.c-scrollbar');
+
+        if (scrollbar.length > 1) {
+            scrollbar[0].remove();
+        }
+
+        // each time the window updates, we should refresh ScrollTrigger and then update LocomotiveScroll. 
+        if (window.__mattiaScrollTriggerRefreshHandler) {
+            ScrollTrigger.removeEventListener('refresh', window.__mattiaScrollTriggerRefreshHandler);
+        }
+        window.__mattiaScrollTriggerRefreshHandler = () => {
+            if (scroll && typeof scroll.update === 'function') {
+                scroll.update();
+            }
+        };
+        ScrollTrigger.addEventListener('refresh', window.__mattiaScrollTriggerRefreshHandler);
+
+        // after everything is set up, refresh() ScrollTrigger and update LocomotiveScroll because padding may have been added for pinning, etc.
+        ScrollTrigger.refresh();
+    }
+}
+
+function initNextWord(data) {
+    // update Text Loading https://github.com/barbajs/barba/issues/507
+    let parser = new DOMParser();
+    let dom = parser.parseFromString(data.next.html, 'text/html');
+    let nextProjects = dom.querySelector('.loading-words');
+    document.querySelector('.loading-words').innerHTML = nextProjects.innerHTML;
+}
+
+function delay(n) {
+    n = n || 2000;
+    return new Promise((done) => {
+        setTimeout(() => {
+            done();
+        }, n);
+    });
+}
+
+
+/**
+ * Fire all scripts on page load
+ */
+function initScript() {
+    select('body').classList.remove('is-loading');
+    initWindowInnerheight();
+    initCheckTouchDevice();
+    initHamburgerNav();
+    // initDynamicNotch(); // removed
+    initMagneticButtons();
+    initStickyCursorWithDelay();
+    initVisualFilter();
+    initScrolltriggerNav();
+    initScrollLetters();
+    initTricksWords();
+    initContactForm();
+    initTimeZone();
+    initLazyLoad();
+    initPlayVideoInview();
+    initScrolltriggerAnimations();
+    scheduleScrollRefresh();
+    scheduleScrollRefresh(250);
+}
+
+/**
+ * Window Inner Height Check
+ */
+function initWindowInnerheight() {
+
+    if (!window.__mattiaSetVh) {
+        window.__mattiaSetVh = function() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+    }
+
+    if (!window.__mattiaVhListenersBound) {
+        window.addEventListener('resize', window.__mattiaSetVh);
+        window.addEventListener('orientationchange', window.__mattiaSetVh);
+        window.__mattiaVhListenersBound = true;
+    }
+
+    window.__mattiaSetVh();
+
+}
+
+/**
+ * Check touch device
+ */
+function initCheckTouchDevice() {
+
+    if (!window.__mattiaDetectTouchMode) {
+        window.__mattiaDetectTouchMode = function() {
+            const coarsePointerMatch = window.matchMedia
+                ? window.matchMedia('(hover: none), (pointer: coarse)').matches
+                : false;
+            return Boolean(coarsePointerMatch || ('ontouchstart' in window) || navigator.maxTouchPoints);
+        };
+    }
+
+    if (!window.__mattiaApplyTouchModeClasses) {
+        window.__mattiaApplyTouchModeClasses = function(isTouchDevice) {
+            const rootNode = document.documentElement;
+            const touchClassName = 'touch-device';
+            const noTouchClassName = 'no-touch-device';
+            const targetClass = isTouchDevice ? touchClassName : noTouchClassName;
+            const oppositeClass = isTouchDevice ? noTouchClassName : touchClassName;
+
+            if (!rootNode.classList.contains(targetClass)) {
+                rootNode.classList.add(targetClass);
+            }
+            rootNode.classList.remove(oppositeClass);
+        };
+    }
+
+    if (!window.__mattiaTouchModeListenersBound) {
+        const syncTouchMode = () => {
+            window.__mattiaApplyTouchModeClasses(window.__mattiaDetectTouchMode());
+        };
+        window.addEventListener('resize', syncTouchMode);
+        window.addEventListener('orientationchange', syncTouchMode);
+        window.__mattiaTouchModeListenersBound = true;
+    }
+
+    window.__mattiaApplyTouchModeClasses(window.__mattiaDetectTouchMode());
+
+}
+
+function initCLSDebugObserver() {
+    if (window.__clsDebugInitialized) {
+        return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('clsdebug') !== '1') {
+        return;
+    }
+
+    window.__clsDebugInitialized = true;
+
+    const getCurrentNamespace = () => {
+        const namespaceNode = document.querySelector('main[data-barba-namespace]');
+        return namespaceNode ? namespaceNode.getAttribute('data-barba-namespace') || 'unknown' : 'unknown';
+    };
+
+    const debugStore = {
+        value: 0,
+        entries: [],
+        topEntries(limit = 10) {
+            return this.entries
+                .slice()
+                .sort((a, b) => b.value - a.value)
+                .slice(0, limit);
+        }
+    };
+
+    window.__clsDebug = debugStore;
+
+    if (!('PerformanceObserver' in window)) {
+        debugStore.unsupported = true;
+        return;
+    }
+
+    try {
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+                if (entry.hadRecentInput) {
+                    return;
+                }
+
+                const sources = Array.isArray(entry.sources)
+                    ? entry.sources.slice(0, 3).map((source) => {
+                        const sourceNode = source && source.node;
+                        let selector = '';
+
+                        if (sourceNode && sourceNode.nodeType === 1) {
+                            const idPart = sourceNode.id ? `#${sourceNode.id}` : '';
+                            const classPart = typeof sourceNode.className === 'string'
+                                ? sourceNode.className
+                                    .trim()
+                                    .split(/\s+/)
+                                    .filter(Boolean)
+                                    .slice(0, 3)
+                                    .map((name) => `.${name}`)
+                                    .join('')
+                                : '';
+                            selector = `${sourceNode.nodeName.toLowerCase()}${idPart}${classPart}`;
+                        }
+
+                        return {
+                            value: source && typeof source.value === 'number' ? source.value : 0,
+                            selector
+                        };
+                    })
+                    : [];
+
+                debugStore.value += entry.value;
+                debugStore.entries.push({
+                    value: entry.value,
+                    startTime: entry.startTime,
+                    namespace: getCurrentNamespace(),
+                    sources
+                });
+
+                if (debugStore.entries.length > 200) {
+                    debugStore.entries.shift();
+                }
+            });
+        });
+
+        observer.observe({
+            type: 'layout-shift',
+            buffered: true
+        });
+
+        debugStore.disconnect = () => observer.disconnect();
+    } catch (error) {
+        debugStore.error = error && error.message ? error.message : 'Failed to initialize CLS debug observer';
+    }
+}
+
+/**
+ * Hamburger Nav Open/Close
+ */
+function initHamburgerNav() {
+
+    // Open/close navigation when clicked .btn-hamburger
+    $(document)
+        .off('click.mattiaNav', '.btn-hamburger, .btn-menu')
+        .on('click.mattiaNav', '.btn-hamburger, .btn-menu', function() {
+            if ($(".btn-hamburger, .btn-menu").hasClass('active')) {
+                $(".btn-hamburger, .btn-menu").removeClass('active');
+                $("main").removeClass('nav-active');
+                if (scroll && typeof scroll.start === 'function') {
+                    scroll.start();
+                }
+            } else {
+                $(".btn-hamburger, .btn-menu").addClass('active');
+                $("main").addClass('nav-active');
+                if (scroll && typeof scroll.stop === 'function') {
+                    scroll.stop();
+                }
+            }
+        });
+
+    $(document)
+        .off('click.mattiaNav', '.fixed-nav-back')
+        .on('click.mattiaNav', '.fixed-nav-back', function() {
+            $(".btn-hamburger, .btn-menu").removeClass('active');
+            $("main").removeClass('nav-active');
+            if (scroll && typeof scroll.start === 'function') {
+                scroll.start();
+            }
+        });
+
+    $(document).off('keydown.mattiaNav').on('keydown.mattiaNav', function(e) {
+        if (e.keyCode == 27 && $('main').hasClass('nav-active')) {
+            $(".btn-hamburger, .btn-menu").removeClass('active');
+            $("main").removeClass('nav-active');
+            if (scroll && typeof scroll.start === 'function') {
+                scroll.start();
+            }
+        }
+    });
+
+}
+
+/**
+ * Magnetic Buttons
+ */
+function initMagneticButtons() {
+
+    // Magnetic Buttons
+    // Found via: https://codepen.io/tdesero/pen/RmoxQg
+    var magnets = Array.from(document.querySelectorAll('.magnetic'));
+    var magnetMetrics = new WeakMap();
+    var magnetTextNodes = new WeakMap();
+
+    function cacheMetrics(magnetButton) {
+        if (!magnetButton) {
+            return;
+        }
+
+        var textNode = magnetTextNodes.get(magnetButton);
+        if (!textNode) {
+            textNode = magnetButton.querySelector(".btn-text");
+            magnetTextNodes.set(magnetButton, textNode || null);
+        }
+
+        var bounding = magnetButton.getBoundingClientRect();
+        magnetMetrics.set(magnetButton, {
+            left: bounding.left,
+            top: bounding.top,
+            width: bounding.width || magnetButton.offsetWidth || 1,
+            height: bounding.height || magnetButton.offsetHeight || 1,
+            textNode: textNode
+        });
+    }
+
+    function moveMagnet(event) {
+        var magnetButton = event.currentTarget;
+        var metrics = magnetMetrics.get(magnetButton);
+        if (!metrics) {
+            cacheMetrics(magnetButton);
+            metrics = magnetMetrics.get(magnetButton);
+        }
+
+        if (!metrics) {
+            return;
+        }
+
+        var magnetsStrength = Number(magnetButton.getAttribute("data-strength") || 0);
+        var magnetsStrengthText = Number(magnetButton.getAttribute("data-strength-text") || 0);
+        var relX = ((event.clientX - metrics.left) / metrics.width) - 0.5;
+        var relY = ((event.clientY - metrics.top) / metrics.height) - 0.5;
+
+        gsap.to(magnetButton, {
+            duration: 1.5,
+            x: relX * magnetsStrength,
+            y: relY * magnetsStrength,
+            rotate: "0.001deg",
+            ease: "power4.out"
+        });
+        if (metrics.textNode) {
+            gsap.to(metrics.textNode, {
+                duration: 1.5,
+                x: relX * magnetsStrengthText,
+                y: relY * magnetsStrengthText,
+                rotate: "0.001deg",
+                ease: "power4.out"
+            });
+        }
+    }
+
+    if (window.__mattiaMagneticResizeHandler) {
+        window.removeEventListener('resize', window.__mattiaMagneticResizeHandler);
+    }
+    if (window.__mattiaMagneticResizeRaf) {
+        cancelAnimationFrame(window.__mattiaMagneticResizeRaf);
+        window.__mattiaMagneticResizeRaf = null;
+    }
+    window.__mattiaMagneticResizeHandler = function() {
+        if (window.__mattiaMagneticResizeRaf) {
+            cancelAnimationFrame(window.__mattiaMagneticResizeRaf);
+        }
+        window.__mattiaMagneticResizeRaf = requestAnimationFrame(function() {
+            magnets.forEach(function(magnet) {
+                cacheMetrics(magnet);
+            });
+            window.__mattiaMagneticResizeRaf = null;
+        });
+    };
+    window.addEventListener('resize', window.__mattiaMagneticResizeHandler, {
+        passive: true
+    });
+
+    // START : If screen is bigger as 540 px do magnetic
+    if (window.innerWidth > 540) {
+        // Mouse Reset
+        magnets.forEach((magnet) => {
+            if (magnet.dataset.magneticBound === 'true') {
+                return;
+            }
+            magnet.dataset.magneticBound = 'true';
+            cacheMetrics(magnet);
+            magnet.addEventListener('mouseenter', function(event) {
+                cacheMetrics(event.currentTarget);
+            }, {
+                passive: true
+            });
+            magnet.addEventListener('mousemove', moveMagnet);
+            magnet.addEventListener('mouseleave', function(event) {
+                gsap.to(event.currentTarget, {
+                    duration: 1.5,
+                    x: 0,
+                    y: 0,
+                    ease: "elastic.out(1, 0.3)"
+                });
+                var leaveMetrics = magnetMetrics.get(event.currentTarget);
+                if (leaveMetrics && leaveMetrics.textNode) {
+                    gsap.to(leaveMetrics.textNode, {
+                        duration: 1.5,
+                        x: 0,
+                        y: 0,
+                        ease: "elastic.out(1, 0.3)"
+                    });
+                }
+            });
+        });
+
+    } // END : If screen is bigger as 540 px do magnetic
+
+    // Mouse Enter
+    $(document).off('mouseenter.mattiaMagneticButtons', '.btn-click.magnetic').on('mouseenter.mattiaMagneticButtons', '.btn-click.magnetic', function() {
+        if ($(this).find(".btn-fill").length) {
+            gsap.to($(this).find(".btn-fill"), {
+                duration: 0.6,
+                startAt: {
+                    y: "76%"
+                },
+                y: "0%",
+                ease: "power2.inOut"
+            });
+        }
+        if ($(this).find(".btn-text-inner.change").length) {
+            gsap.to($(this).find(".btn-text-inner.change"), {
+                duration: 0.3,
+                startAt: {
+                    color: "#1C1D20"
+                },
+                color: "#FFFFFF",
+                ease: "power3.in",
+            });
+        }
+        $(this.parentNode).removeClass('not-active');
+    });
+
+    // Mouse Leave
+    $(document).off('mouseleave.mattiaMagneticButtons', '.btn-click.magnetic').on('mouseleave.mattiaMagneticButtons', '.btn-click.magnetic', function() {
+        if ($(this).find(".btn-fill").length) {
+            gsap.to($(this).find(".btn-fill"), {
+                duration: 0.6,
+                y: "-76%",
+                ease: "power2.inOut"
+            });
+        }
+        if ($(this).find(".btn-text-inner.change").length) {
+            gsap.to($(this).find(".btn-text-inner.change"), {
+                duration: 0.3,
+                color: "#1C1D20",
+                ease: "power3.out",
+                delay: 0.3
+            });
+        }
+        $(this.parentNode).removeClass('not-active');
+    });
+}
+
+
+/**
+ * Sticky Cursor with Delay
+ */
+
+// Sticky Cursor with delay
+// https://greensock.com/forums/topic/21161-animated-mouse-cursor/
+
+function initStickyCursorWithDelay() {
+
+    var cursorImage = $(".mouse-pos-list-image");
+    var cursorBtn = $(".mouse-pos-list-btn");
+    var cursorSpan = $(".mouse-pos-list-span");
+
+    var posXImage = 0;
+    var posYImage = 0;
+    var posXBtn = 0;
+    var posYBtn = 0;
+    var posXSpan = 0;
+    var posYSpan = 0;
+    var mouseX = 0;
+    var mouseY = 0;
+
+    if (stickyCursorTicker) {
+        stickyCursorTicker.kill();
+        stickyCursorTicker = null;
+    }
+
+    if (document.querySelector(".mouse-pos-list-image, .mouse-pos-list-btn, .mouse-post-list-span")) {
+        stickyCursorTicker = gsap.to({}, {
+            duration: 0.0083333333,
+            repeat: -1,
+            onRepeat: function() {
+
+                if (document.querySelector(".mouse-pos-list-image")) {
+                    posXImage += (mouseX - posXImage) / 12;
+                    posYImage += (mouseY - posYImage) / 12;
+                    gsap.set(cursorImage, {
+                        x: posXImage,
+                        y: posYImage,
+                        xPercent: -50,
+                        yPercent: -52,
+                        force3D: true
+                    });
+                }
+                if (document.querySelector(".mouse-pos-list-btn")) {
+                    posXBtn += (mouseX - posXBtn) / 7;
+                    posYBtn += (mouseY - posYBtn) / 7;
+                    gsap.set(cursorBtn, {
+                        x: posXBtn,
+                        y: posYBtn,
+                        xPercent: -50,
+                        yPercent: -60,
+                        force3D: true
+                    });
+                }
+                if (document.querySelector(".mouse-pos-list-span")) {
+                    posXSpan += (mouseX - posXSpan) / 6;
+                    posYSpan += (mouseY - posYSpan) / 6;
+                    gsap.set(cursorSpan, {
+                        x: posXSpan,
+                        y: posYSpan,
+                        xPercent: -50,
+                        yPercent: -60,
+                        force3D: true
+                    });
+                }
+            }
+        });
+    }
+
+    $(document).off("mousemove.mattiaStickyCursor").on("mousemove.mattiaStickyCursor", function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    // Animated Section Assortiment Single Floating Image
+    // Source: http://jsfiddle.net/639Jj/1/ 
+
+    $(document).off('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap a').on('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap a', function() {
+        $('.mouse-pos-list-image, .mouse-pos-list-btn, .mouse-pos-list-span, .mouse-pos-list-span-big').addClass('active');
+    });
+    $(document).off('mouseleave.mattiaStickyCursor', '.mouse-pos-list-image-wrap a').on('mouseleave.mattiaStickyCursor', '.mouse-pos-list-image-wrap a', function() {
+        $('.mouse-pos-list-image, .mouse-pos-list-btn, .mouse-pos-list-span, .mouse-pos-list-span-big').removeClass('active');
+    });
+    $(document).off('mouseenter.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .next-case-btn').on('mouseenter.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .next-case-btn', function() {
+        $('.mouse-pos-list-btn, .mouse-pos-list-span').addClass('active-big');
+    });
+    $(document).off('mouseleave.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .next-case-btn').on('mouseleave.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .next-case-btn', function() {
+        $('.mouse-pos-list-btn, .mouse-pos-list-span').removeClass('active-big');
+    });
+    $('main').off('mousedown.mattiaStickyCursor').on('mousedown.mattiaStickyCursor', function() {
+        $(".mouse-pos-list-btn, .mouse-pos-list-span").addClass('pressed');
+    });
+    $('main').off('mouseup.mattiaStickyCursor').on('mouseup.mattiaStickyCursor', function() {
+        $(".mouse-pos-list-btn, .mouse-pos-list-span").removeClass('pressed');
+    });
+
+    $(document).off('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap li.visible').on('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap li.visible', function() {
+
+        var $elements = $(".mouse-pos-list-image-wrap li.visible");
+        var index = $elements.index($(this));
+        var count = $(".mouse-pos-list-image li.visible").length;
+        // var index =  $(this).index();
+        if ($(".float-image-wrap")) {
+            gsap.to($(".float-image-wrap"), {
+                y: (index * 100) / (count * -1) + "%",
+                duration: 0.6,
+                ease: "power2.inOut"
+            });
+        }
+        $(".mouse-pos-list-image.active .mouse-pos-list-image-bounce").addClass("active").delay(400).queue(function(next) {
+            $(this).removeClass("active");
+            next();
+        });
+
+    });
+
+    $(document).off('mouseenter.mattiaStickyCursor', '.archive-work-grid li').on('mouseenter.mattiaStickyCursor', '.archive-work-grid li', function() {
+        $(".mouse-pos-list-btn").addClass("hover").delay(100).queue(function(next) {
+            $(this).removeClass("hover");
+            next();
+        });
+    });
+
+}
+
+/**
+ * Visual Filter
+ */
+function initVisualFilter() {
+
+    // Visual Filter
+    $(document).ready(function() {
+
+        $('.toggle-row .btn').off('click.mattiaVisualFilter').on('click.mattiaVisualFilter', function() {
+            if ($(this).hasClass('active')) {} else {
+                $('.work-tiles li, .work-items li').addClass('tile-fade-out');
+                scroll.stop();
+                setTimeout(function() {
+                    $('.work-tiles li, .work-items li').removeClass('tile-fade-out');
+                    $('.work-tiles li, .work-items li').addClass('tile-fade-in');
+                    scroll.scrollTo('top', {
+                        'offset': 0,
+                        'duration': 700,
+                        'easing': [0.7, 0.00, 0.35, 1.00],
+                        'disableLerp': true
+                    });
+                }, 300);
+                setTimeout(function() {
+                    $('.work-tiles li, .work-items li').removeClass('tile-fade-in');
+                    scroll.update();
+                    ScrollTrigger.refresh();
+                    scroll.start();
+                }, 700);
+            }
+        });
+        $('.all-btn').off('click.mattiaVisualFilter').on('click.mattiaVisualFilter', function() {
+            if ($(this).hasClass('active')) {} else {
+                $('.toggle-row .btn-normal').removeClass('active');
+                $('.toggle-row .btn-normal').addClass('not-active');
+                $(this).addClass('active');
+                $(this).removeClass('not-active');
+                // Cookies.set("filter", "all", { expires: 1 });
+                setTimeout(function() {
+                    $('.mouse-pos-list-image li, .mouse-pos-list-image-wrap li, .work-tiles li').addClass('visible');
+                }, 300);
+            }
+        });
+        $('.first-work-category-btn').off('click.mattiaVisualFilter').on('click.mattiaVisualFilter', function() {
+            if ($(this).hasClass('active')) {} else {
+                $('.toggle-row .btn-normal').removeClass('active');
+                $('.toggle-row .btn-normal').addClass('not-active');
+                $(this).addClass('active');
+                $(this).removeClass('not-active');
+                // Cookies.set("filter", "data", { expires: 1 });
+                setTimeout(function() {
+                    $('.mouse-pos-list-image li, .mouse-pos-list-image-wrap li, .work-tiles li').removeClass('visible');
+                    $('.mouse-pos-list-image li.first-work-category, .mouse-pos-list-image-wrap li.first-work-category, .work-tiles li.first-work-category').addClass('visible');
+                }, 300);
+            }
+        });
+        $('.second-work-category-btn').off('click.mattiaVisualFilter').on('click.mattiaVisualFilter', function() {
+            if ($(this).hasClass('active')) {} else {
+                $('.toggle-row .btn-normal').removeClass('active');
+                $('.toggle-row .btn-normal').addClass('not-active');
+                $(this).addClass('active');
+                $(this).removeClass('not-active');
+                // Cookies.set("filter", "development", { expires: 1 });
+                setTimeout(function() {
+                    $('.mouse-pos-list-image li, .mouse-pos-list-image-wrap li, .work-tiles li').removeClass('visible');
+                    $('.mouse-pos-list-image li.second-work-category, .mouse-pos-list-image-wrap li.second-work-category, .work-tiles li.second-work-category').addClass('visible');
+                }, 300);
+            }
+        });
+
+        $('.grid-row .btn').off('click.mattiaVisualFilter').on('click.mattiaVisualFilter', function() {
+            if ($(this).hasClass('active')) {} else {
+                $('.grid-fade').addClass('grid-fade-out');
+                scroll.stop();
+                scroll.scrollTo('top', {
+                    'offset': 0,
+                    'duration': 700,
+                    'easing': [0.7, 0.00, 0.35, 1.00],
+                    'disableLerp': true
+                });
+                setTimeout(function() {
+                    $('.grid-fade').removeClass('grid-fade-out');
+                    $('.grid-fade').addClass('grid-fade-in');
+                }, 300);
+                setTimeout(function() {
+                    $('.grid-fade').removeClass('grid-fade-in');
+                    scroll.update();
+                    ScrollTrigger.refresh();
+                    scroll.start();
+                }, 700);
+            }
+        });
+        $('.grid-row .rows-btn').off('click.mattiaVisualFilter').on('click.mattiaVisualFilter', function() {
+            if ($(this).hasClass('active')) {} else {
+                $('.grid-row .btn-normal').removeClass('active');
+                $('.grid-row .btn-normal').addClass('not-active');
+                Cookies.set("view", "rows", {
+                    expires: 14
+                });
+                $(this).addClass('active');
+                $(this).removeClass('not-active');
+                setTimeout(function() {
+                    $('.grid-columns-part').removeClass('visible');
+                    $('.grid-rows-part').addClass('visible');
+                }, 300);
+            }
+        });
+        $('.grid-row .columns-btn').off('click.mattiaVisualFilter').on('click.mattiaVisualFilter', function() {
+            if ($(this).hasClass('active')) {} else {
+                $('.grid-row .btn-normal').removeClass('active');
+                $('.grid-row .btn-normal').addClass('not-active');
+                Cookies.set("view", "columns", {
+                    expires: 14
+                });
+                $(this).addClass('active');
+                $(this).removeClass('not-active');
+                setTimeout(function() {
+                    $('.grid-rows-part').removeClass('visible');
+                    $('.grid-columns-part').addClass('visible');
+                }, 300);
+            }
+        });
+
+    });
+
+}
+
+
+/**
+ * Cookie Views
+ */
+function initCookieViews() {
+    // Set cookie for columns/rows view
+    // https://www.youtube.com/watch?v=rfwiyBoVwdQ&ab_channel=TimothyRicks
+    const htmlNode = document.documentElement;
+    const prepaintColumnsClass = 'prefers-work-columns';
+    const wantsColumnsView = Cookies.get("view") == "columns";
+
+    if (!wantsColumnsView) {
+        htmlNode.classList.remove(prepaintColumnsClass);
+        return;
+    }
+
+    const rowsPart = document.querySelector('#work .grid-rows-part');
+    const columnsPart = document.querySelector('#work .grid-columns-part');
+
+    if (!rowsPart || !columnsPart) {
+        htmlNode.classList.remove(prepaintColumnsClass);
+        return;
+    }
+
+    const isColumnsVisible = Boolean(rowsPart && columnsPart && !rowsPart.classList.contains('visible') && columnsPart.classList.contains('visible'));
+
+    $('.grid-row .rows-btn').removeClass('active');
+    $('.grid-row .columns-btn').addClass('active');
+
+    if (!isColumnsVisible) {
+        if (rowsPart) {
+            rowsPart.classList.remove('visible');
+        }
+        if (columnsPart) {
+            columnsPart.classList.add('visible');
+        }
+        if (scroll && typeof scroll.update === 'function') {
+            scroll.update();
+        }
+        ScrollTrigger.refresh();
+    }
+
+    htmlNode.classList.remove(prepaintColumnsClass);
+}
+
+
+/**
+ * Scrolltrigger Scroll Check
+ */
+function initScrolltriggerNav() {
+
+    ScrollTrigger.create({
+        start: 'top -30%',
+        onUpdate: self => {
+            $("main").addClass('scrolled');
+        },
+        onLeaveBack: () => {
+            $("main").removeClass('scrolled');
+        },
+    });
+
+}
+
+
+/**
+ * Scrolltrigger Scroll Letters Home
+ */
+function initScrollLetters() {
+    // Scrolling Letters Both Direction
+    // https://codepen.io/GreenSock/pen/rNjvgjo
+    // Fixed example with resizing
+    // https://codepen.io/GreenSock/pen/QWqoKBv?editors=0010
+
+    if (window.__mattiaScrollLettersCleanup) {
+        window.__mattiaScrollLettersCleanup();
+        window.__mattiaScrollLettersCleanup = null;
+    }
+
+    let direction = 1; // 1 = forward, -1 = backward scroll
+    const cleanupCallbacks = [];
+
+    const roll1 = roll(".big-name .name-wrap", {
+            duration: 18
+        }),
+        roll2 = roll(".rollingText02", {
+            duration: 10
+        }, true),
+        scroll = ScrollTrigger.create({
+            trigger: document.querySelector('[data-scroll-container]'),
+            onUpdate(self) {
+                if (self.direction !== direction) {
+                    direction *= -1;
+                    gsap.to([roll1, roll2], {
+                        timeScale: direction,
+                        overwrite: true
+                    });
+                }
+            }
+        });
+
+    cleanupCallbacks.push(function() {
+        if (scroll && typeof scroll.kill === 'function') {
+            scroll.kill();
+        }
+    });
+
+    window.__mattiaScrollLettersCleanup = function() {
+        cleanupCallbacks.forEach(function(cleanupCallback) {
+            cleanupCallback();
+        });
+        cleanupCallbacks.length = 0;
+        window.__mattiaScrollLettersCleanup = null;
+    };
+
+    // helper function that clones the targets, places them next to the original, then animates the xPercent in a loop to make it appear to roll across the screen in a seamless loop.
+    function roll(targets, vars, reverse) {
+        vars = vars || {};
+        vars.ease || (vars.ease = "none");
+        const tl = gsap.timeline({
+            repeat: -1,
+            onReverseComplete() {
+                this.totalTime(this.rawTime() + this.duration() * 10); // otherwise when the playhead gets back to the beginning, it'd stop. So push the playhead forward 10 iterations (it could be any number)
+            }
+        });
+        const elements = gsap.utils.toArray(targets);
+        const clones = elements.map(el => {
+            let clone = el.cloneNode(true);
+            el.parentNode.appendChild(clone);
+            return clone;
+        });
+        let resizeRafId = 0;
+
+        function positionClones() {
+            const clonePositions = elements.map((el) => ({
+                top: el.offsetTop,
+                left: el.offsetLeft + (reverse ? -el.offsetWidth : el.offsetWidth)
+            }));
+
+            gsap.set(clones, {
+                position: "absolute",
+                overwrite: false
+            });
+
+            clonePositions.forEach((position, index) => {
+                gsap.set(clones[index], {
+                    top: position.top,
+                    left: position.left
+                });
+            });
+        }
+
+        function syncTimelinePosition() {
+            let time = tl.totalTime(); // record the current time
+            tl.totalTime(0); // rewind and clear out the timeline
+            positionClones(); // reposition
+            tl.totalTime(time); // jump back to the proper time
+        }
+
+        function handleResize() {
+            if (resizeRafId) {
+                cancelAnimationFrame(resizeRafId);
+            }
+            resizeRafId = requestAnimationFrame(() => {
+                syncTimelinePosition();
+                resizeRafId = 0;
+            });
+        }
+
+        if (!elements.length) {
+            return tl;
+        }
+
+        positionClones();
+        elements.forEach((el, i) => tl.to([el, clones[i]], {
+            xPercent: reverse ? 100 : -100,
+            ...vars
+        }, 0));
+
+        window.addEventListener("resize", handleResize, {
+            passive: true
+        });
+
+        cleanupCallbacks.push(function() {
+            window.removeEventListener("resize", handleResize);
+            if (resizeRafId) {
+                cancelAnimationFrame(resizeRafId);
+                resizeRafId = 0;
+            }
+            clones.forEach((clone) => {
+                if (clone && clone.parentNode) {
+                    clone.parentNode.removeChild(clone);
+                }
+            });
+            tl.kill();
+        });
+
+        return tl;
+    }
+
+}
+
+
+
+/**
+ * Scrolltrigger Nav
+ */
+function initTricksWords() {
+
+    // Copyright start
+    // © Code by T.RICKS, https://www.tricksdesign.com/
+    // You have the license to use this code in your projects but not redistribute it to others
+    // Tutorial: https://www.youtube.com/watch?v=xiAqTu4l3-g&ab_channel=TimothyRicks
+
+    // Find all text with .tricks class and break each letter into a span
+    var spanWord = document.getElementsByClassName("span-lines");
+    for (var i = 0; i < spanWord.length; i++) {
+
+        var wordWrap = spanWord.item(i);
+        if (!wordWrap) {
+            continue;
+        }
+        if (!wordWrap.querySelector('.span-line')) {
+            wordWrap.innerHTML = wordWrap.innerHTML.replace(/(^|<\/?[^>]+>|\s+)([^\s<]+)/g, '$1<span class="span-line"><span class="span-line-inner">$2</span></span>');
+        }
+        wordWrap.classList.add('is-split-ready');
+
+    }
+
+}
+
+/**
+ * Contact Form
+ */
+function initContactForm() {
+
+    $('.field').off('input.mattiaContact').on('input.mattiaContact', function() {
+        $(this).parent().toggleClass('not-empty', this.value.trim().length > 0);
+    });
+
+    $('.field').off('focusout.mattiaContact').on('focusout.mattiaContact', function() {
+        var text_val = $(this).val();
+        $(this).parent().toggleClass('not-empty', text_val !== "");
+    }).trigger('focusout');
+
+}
+
+/**
+ * Dynamic Notch - disabled
+ */
+function initDynamicNotch() {
+    // Removed
+}
+
+/**
+ * Footer Time Zone
+ */
+function initTimeZone() {
+
+    // Time zone
+    // https://stackoverflow.com/questions/39418405/making-a-live-clock-in-javascript/67149791#67149791
+    // https://stackoverflow.com/questions/8207655/get-time-of-specific-timezone
+    // https://stackoverflow.com/questions/63572780/how-to-update-intl-datetimeformat-with-new-date
+
+    const timeSpan = document.querySelector("#timeSpan");
+    const copyrightYear = document.querySelector(".credits p:nth-of-type(2)");
+
+    const optionsTime = {
+        timeZone: 'Asia/Kolkata',
+        timeZoneName: 'short',
+        // year: 'numeric',
+        // month: 'numeric',
+        // day: 'numeric',
+        hour: '2-digit',
+        hour12: 'true',
+        minute: 'numeric',
+        // second: 'numeric',
+    };
+
+    const formatter = new Intl.DateTimeFormat([], optionsTime);
+    
+    // Aggiorna l'anno del copyright una sola volta all'avvio
+    updateCopyrightYear();
+    
+    // Aggiorna l'orologio ogni secondo
+    updateTime();
+    if (window.__mattiaClockInterval) {
+        window.clearInterval(window.__mattiaClockInterval);
+    }
+    window.__mattiaClockInterval = window.setInterval(updateTime, 1000);
+
+    function updateTime() {
+        const dateTime = new Date();
+        const formattedDateTime = formatter.format(dateTime);
+        timeSpan.textContent = formattedDateTime;
+    }
+    
+    function updateCopyrightYear() {
+        const currentYear = new Date().getFullYear();
+        copyrightYear.textContent = `${currentYear} \u00A9 Edition`;
+    }
+}
+
+/**
+ * Lazy Load
+ */
+function initLazyLoad() {
+    // https://github.com/locomotivemtl/locomotive-scroll/issues/225
+    // https://github.com/verlok/vanilla-lazyload
+    var lazyLoadInstance = new LazyLoad({
+        elements_selector: ".lazy",
+        callback_loaded: function() {
+            scheduleScrollRefresh();
+            scheduleScrollRefresh(200);
+        },
+        callback_finish: function() {
+            scheduleScrollRefresh();
+        }
+    });
+
+}
+
+/**
+ * Play Video Inview
+ */
+function initPlayVideoInview() {
+
+    let allVideoDivs = gsap.utils.toArray('.playpauze');
+
+    allVideoDivs.forEach((videoDiv, i) => {
+
+        let videoElem = videoDiv.querySelector('video')
+
+        ScrollTrigger.create({
+            scroller: document.querySelector('[data-scroll-container]'),
+            trigger: videoElem,
+            start: '0% 120%',
+            end: '100% -20%',
+            onEnter: () => videoElem.play(),
+            onEnterBack: () => videoElem.play(),
+            onLeave: () => videoElem.pause(),
+            onLeaveBack: () => videoElem.pause(),
+        });
+
+    });
+}
+
+/**
+ * Scrolltrigger Animations Desktop + Mobile
+ */
+function initScrolltriggerAnimations() {
+
+    if (document.querySelector(".footer-wrap")) {
+        // Scrolltrigger Animation : Footer + hamburger
+        $(".footer-wrap").each(function(index) {
+            let triggerElement = $(this);
+            let targetElementHamburger = $(".btn-hamburger .btn-click");
+
+            let tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: triggerElement,
+                    start: "50% 100%",
+                    end: "100% 120%",
+                    scrub: 0
+                }
+            });
+            tl.from(targetElementHamburger, {
+                boxShadow: "0px 0px 0px 0px rgb(0, 0, 0)",
+                ease: "none"
+            });
+        });
+    }
+
+    // Scrolltrigger Animation : Span Lines Intro Home
+    if (document.querySelector(".span-lines.animate")) {
+        $(".span-lines.animate").each(function(index) {
+            let triggerElement = $(this);
+            let targetElement = $(".span-lines.animate .span-line-inner");
+
+            let tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: triggerElement,
+                    toggleActions: 'play none none reset',
+                    start: "0% 100%",
+                    end: "100% 0%"
+                }
+            });
+            if (targetElement) {
+                tl.from(targetElement, {
+                    y: "100%",
+                    stagger: .01,
+                    ease: "power3.out",
+                    duration: 1,
+                    delay: 0
+                });
+            }
+        });
+    }
+
+    if (document.querySelector(".fade-in.animate")) {
+        // Scrolltrigger Animation : Fade in
+        $(".fade-in.animate").each(function(index) {
+            let triggerElement = $(this);
+            let targetElement = $(this);
+
+            let tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: triggerElement,
+                    toggleActions: 'play none none reset',
+                    start: "0% 110%",
+                    end: "100% 0%",
+                }
+            });
+            if (targetElement) {
+                tl.from(targetElement, {
+                    y: "2em",
+                    opacity: 0,
+                    ease: "expo.out",
+                    duration: 1.75,
+                    delay: 0
+                });
+            }
+        });
+    }
+
+    if (document.querySelector(".awwwards-badge")) {
+        // Scrolltrigger Animation : Awwwards
+        $(".awwwards-badge").each(function(index) {
+            let triggerElement = $(this);
+            let targetElement = $(".awwwards-badge svg:nth-child(1)");
+
+            let tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: triggerElement,
+                    start: "0% 100%",
+                    end: "100% 0%",
+                    scrub: 0
+                }
+            });
+            tl.to(targetElement, {
+                rotate: -90,
+                ease: "none"
+            });
+        });
+    }
+
+    // Disable GSAP on Mobile
+    // Source: https://greensock.com/forums/topic/26325-disabling-scrolltrigger-on-mobile-with-mediamatch/
+    let mm = gsap.matchMedia();
+
+    // Desktop Only Scrolltrigger
+    mm.add("(min-width: 721px)", () => {
+
+            if (document.querySelector(".home-header .arrow")) {
+                // Scrolltrigger Animation : Header Arrow
+                $(".home-header").each(function(index) {
+                    let triggerElement = $(this);
+                    let targetElement = $(".home-header .arrow");
+
+                    let tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: triggerElement,
+                            start: "100% 100%",
+                            end: "100% 0%",
+                            scrub: 0
+                        }
+                    });
+                    tl.to(targetElement, {
+                        rotate: 90,
+                        ease: "none"
+                    }, 0);
+                });
+            }
+
+            if (document.querySelector(".footer-footer-wrap")) {
+                // Scrolltrigger Animation : Footer General Footer
+                $(".footer-footer-wrap").each(function(index) {
+                    let triggerElement = $(this);
+                    let targetElementRound = $(".footer-rounded-div .rounded-div-wrap");
+                    let targetElementArrow = $("footer .arrow");
+
+                    let tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: triggerElement,
+                            start: "0% 100%",
+                            end: "100% 100%",
+                            scrub: 0
+                        }
+                    });
+                    tl.to(targetElementRound, {
+                            height: 0,
+                            ease: "none"
+                        }, 0)
+                        .from(targetElementArrow, {
+                            rotate: 15,
+                            ease: "none"
+                        }, 0);
+                });
+            }
+
+            if (document.querySelector(".footer-case-wrap")) {
+                // Scrolltrigger Animation : Footer Case
+                $(".footer-case-wrap").each(function(index) {
+                    let triggerElement = $(this);
+                    let targetElementRound = $(".footer-rounded-div .rounded-div-wrap");
+
+                    let tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: triggerElement,
+                            start: "0% 100%",
+                            end: "100% 100%",
+                            scrub: 0
+                        }
+                    });
+                    tl.to(targetElementRound, {
+                        height: 0,
+                        ease: "none"
+                    }, 0);
+                });
+            }
+
+            if (document.querySelector(".about-image .single-about-image")) {
+                // Scrolltrigger Animation : About 
+                $(".about-image .single-about-image").each(function(index) {
+                    let triggerElement = $(this);
+                    let targetElement = $(".about-image .arrow");
+
+                    let tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: triggerElement,
+                            start: "15% 100%",
+                            end: "100% 0%",
+                            scrub: 0,
+                        }
+                    });
+                    tl.to(targetElement, {
+                        rotate: 60,
+                        ease: "none"
+                    }, 0);
+                });
+            }
+
+
+            if (document.querySelector(".about-services")) {
+                // Scrolltrigger Animation : About Services BG
+                $(".about-services").each(function(index) {
+                    let triggerElement = $(this);
+                    let targetElement = $(".about-header, .line-globe, .about-image, .about-services");
+
+                    let tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: triggerElement,
+                            start: "-25% 100%",
+                            end: "100% 100%",
+                            scrub: 0,
+                        }
+                    });
+                    tl.set(targetElement, {
+                        backgroundColor: "#FFFFFF",
+                    })
+                    tl.to(targetElement, {
+                        backgroundColor: "#E9EAEB",
+                        ease: "none",
+                    });
+                });
+            }
+
+            if (document.querySelector(".digital-ball .globe")) {
+                // Scrolltrigger Animation : Globe
+                $("main").each(function(index) {
+                    let triggerElement = $(this);
+                    let targetElement = $(".digital-ball .globe");
+
+                    let tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: triggerElement,
+                            start: "100% 100%",
+                            end: "100% 0%",
+                            scrub: 0,
+                        }
+                    });
+
+                    tl.to(targetElement, {
+                        ease: "none",
+                        rotate: 90
+                    });
+                });
+            }
+
+        }); // End Desktop Only Scrolltrigger
+
+    // Mobile Only Scrolltrigger
+    mm.add("(max-width: 720px)", () => {
+
+            if (document.querySelector(".footer-wrap")) {
+                // Scrolltrigger Animation : Footer
+                $(".footer-wrap").each(function(index) {
+                    let triggerElement = $(this);
+                    let targetElementRound = $(".footer-rounded-div .rounded-div-wrap");
+
+                    let tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: triggerElement,
+                            start: "0% 100%",
+                            end: "100% 100%",
+                            scrub: 0
+                        }
+                    });
+                    tl.to(targetElementRound, {
+                        height: 0,
+                        ease: "none"
+                    }, 0);
+                });
+            }
+
+        }); // End Mobile Only Scrolltrigger
+
+} // End initScrolltriggerAnimations
