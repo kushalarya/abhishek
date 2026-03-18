@@ -2308,18 +2308,10 @@ main {
     position: fixed;
 }
 
-html.touch-device main {
-    position: relative;
-    height: auto;
-}
-
-html.touch-device main .main-wrap {
-    position: relative;
-}
-
 @media screen and (max-width: 1024px) {
     main {
         position: relative;
+        height: auto;
     }
     .main-wrap {
         position: relative;
@@ -2333,24 +2325,13 @@ html.touch-device main .main-wrap {
     display: none;
 }
 
-@media screen and (max-width: 720px) {
-    .second-circle-follow {
-        display: none; 
-    }
-}
 
-@media screen and (max-width: 540px) {
+/* Hide custom cursor follow-circle on touch/mobile devices */
+@media screen and (max-width: 720px), (hover: none) and (pointer: coarse) {
     .second-circle-follow {
         display: none;
     }
 }
-
-/* Specifically target touch devices */
-@media (hover: none) and (pointer: coarse) {
-    .second-circle-follow {
-      display: none !important; /* Force-hide custom cursor on touch devices */
-    }
-  }
 
 .hide-circles {
     display: none;
@@ -4255,6 +4236,11 @@ html.touch-device main .main-wrap {
     padding-right: calc(var(--container-padding) * .5);
 }
 
+/* Homepage uses work-tiles-home on all devices for consistency */
+body[data-barba="wrapper"] #home .large-work-grid {
+    display: none;
+}
+
 @media screen and (max-width: 1024px) {
     .large-work-grid {
         display: none;
@@ -4606,9 +4592,9 @@ html.touch-device main .main-wrap {
 
 .work-tiles ul li .single-tile-wrap {
     width: 100%;
-    padding-bottom: calc(var(--section-padding) * 1);
-    padding-left: calc(var(--container-padding) * .25);
-    padding-right: calc(var(--container-padding) * .25);
+    padding-bottom: calc(var(--section-padding) * .48);
+    padding-left: calc(var(--container-padding) * .4);
+    padding-right: calc(var(--container-padding) * .4);
 }
 
 .work-tiles ul li a {
@@ -4620,7 +4606,7 @@ html.touch-device main .main-wrap {
 
 .work-tiles ul li a .flex-col:nth-child(1) {
     width: 100%;
-    padding-bottom: var(--gap-padding);
+    padding-bottom: calc(var(--gap-padding) * .48);
 }
 
 .work-tiles ul li a .flex-col:nth-child(2) {
@@ -4682,7 +4668,7 @@ html.touch-device main .main-wrap {
 
 @media screen and (max-width: 1024px) {
     .work-tiles ul li a h4 {
-        font-size: calc(clamp(1.75em, 2.3vw, 2.5em) * 1.125);
+        font-size: calc(clamp(1.75em, 2.3vw, 2.5em) * .85);
     }
 }
 
@@ -4695,6 +4681,7 @@ html.touch-device main .main-wrap {
         padding-right: var(--container-padding);
     }
     .work-tiles ul li .single-tile-wrap {
+        padding-bottom: calc(var(--section-padding) * .38);
         padding-left: 0;
         padding-right: 0;
     }
@@ -4708,12 +4695,15 @@ html.touch-device main .main-wrap {
     .work-tiles ul li a .stripe {
         margin-top: calc(var(--section-padding) / 6);
     }
+    .work-tiles ul li a .tile-image::before {
+        padding-top: 100%;
+    }
 }
 
 /* ------------------------- Work Tiles - Home -------------------------------------------------- */
 
 .work-tiles-home {
-    display: none;
+    display: block;
     padding-bottom: 0;
 }
 
@@ -4723,12 +4713,6 @@ html.touch-device main .main-wrap {
     }
     .work-tiles-home+.center-grid-btn {
         padding-top: 0;
-    }
-    .work-tiles-home .container ul li:nth-child(3) {
-        display: none;
-    }
-    .work-tiles-home .container ul li:nth-child(4) {
-        display: none;
     }
 }
 

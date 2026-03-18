@@ -78,15 +78,9 @@ function initLoaderHome() {
         opacity: 1,
     });
 
-    if (window.innerWidth > 540) {
-        tl.set(".loading-screen .rounded-div-wrap.bottom", {
-            height: "10vh",
-        });
-    } else {
-        tl.set(".loading-screen .rounded-div-wrap.bottom", {
-            height: "5vh",
-        });
-    }
+    tl.set(".loading-screen .rounded-div-wrap.bottom", {
+        height: "clamp(5vh, 5vw, 10vh)",
+    });
 
     tl.set("html", {
         cursor: "wait"
@@ -191,15 +185,9 @@ function initLoader() {
         y: -50
     });
 
-    if (window.innerWidth > 540) {
-        tl.set(".loading-screen .rounded-div-wrap.bottom", {
-            height: "10vh",
-        });
-    } else {
-        tl.set(".loading-screen .rounded-div-wrap.bottom", {
-            height: "5vh",
-        });
-    }
+    tl.set(".loading-screen .rounded-div-wrap.bottom", {
+        height: "clamp(5vh, 5vw, 10vh)",
+    });
 
     tl.set("html", {
         cursor: "wait"
@@ -268,15 +256,9 @@ function pageTransitionIn() {
         cursor: "wait"
     });
 
-    if (window.innerWidth > 540) {
-        tl.set(".loading-screen .rounded-div-wrap.bottom", {
-            height: "10vh",
-        });
-    } else {
-        tl.set(".loading-screen .rounded-div-wrap.bottom", {
-            height: "5vh",
-        });
-    }
+    tl.set(".loading-screen .rounded-div-wrap.bottom", {
+        height: "clamp(5vh, 5vw, 10vh)",
+    });
 
     tl.to(".loading-screen", {
         duration: .5,
@@ -284,19 +266,11 @@ function pageTransitionIn() {
         ease: "Power4.easeIn"
     });
 
-    if (window.innerWidth > 540) {
-        tl.to(".loading-screen .rounded-div-wrap.top", {
-            duration: .4,
-            height: "10vh",
-            ease: "Power4.easeIn"
-        }, "=-.5");
-    } else {
-        tl.to(".loading-screen .rounded-div-wrap.top", {
-            duration: .4,
-            height: "10vh",
-            ease: "Power4.easeIn"
-        }, "=-.5");
-    }
+    tl.to(".loading-screen .rounded-div-wrap.top", {
+        duration: .4,
+        height: "10vh",
+        ease: "Power4.easeIn"
+    }, "=-.5");
 
     tl.to(".loading-words", {
         duration: .8,
@@ -332,15 +306,9 @@ function pageTransitionIn() {
         cursor: "auto"
     }, "=-0.6");
 
-    if (window.innerWidth > 540) {
-        tl.set(".loading-screen .rounded-div-wrap.bottom", {
-            height: "10vh"
-        });
-    } else {
-        tl.set(".loading-screen .rounded-div-wrap.bottom", {
-            height: "5vh"
-        });
-    }
+    tl.set(".loading-screen .rounded-div-wrap.bottom", {
+        height: "clamp(5vh, 5vw, 10vh)",
+    });
 
     tl.set(".loading-screen", {
         top: "100%"
@@ -406,12 +374,10 @@ function initPageTransitions() {
         scheduleScrollRefresh(250);
     });
 
-    if (window.innerWidth > 540) {
-        barba.hooks.leave(() => {
-            $(".btn-hamburger, .btn-menu").removeClass('active');
-            $("main").removeClass('nav-active');
-        });
-    }
+    barba.hooks.leave(() => {
+        $(".btn-hamburger, .btn-menu").removeClass('active');
+        $("main").removeClass('nav-active');
+    });
 
 
     barba.init({
@@ -863,8 +829,9 @@ function initMagneticButtons() {
         passive: true
     });
 
-    // START : If screen is bigger as 540 px do magnetic
-    if (window.innerWidth > 540) {
+    // START : Enable magnetic effect only on non-touch (pointer) devices
+    var isTouchDevice = document.documentElement.classList.contains('touch-device');
+    if (!isTouchDevice) {
         // Mouse Reset
         magnets.forEach((magnet) => {
             if (magnet.dataset.magneticBound === 'true') {
@@ -958,6 +925,7 @@ function initStickyCursorWithDelay() {
     var cursorImage = $(".mouse-pos-list-image");
     var cursorBtn = $(".mouse-pos-list-btn");
     var cursorSpan = $(".mouse-pos-list-span");
+    var isTouchDevice = document.documentElement.classList.contains('touch-device');
 
     var posXImage = 0;
     var posYImage = 0;
@@ -973,9 +941,17 @@ function initStickyCursorWithDelay() {
         stickyCursorTicker = null;
     }
 
-    if (document.querySelector(".mouse-pos-list-image, .mouse-pos-list-btn, .mouse-post-list-span")) {
+    $(document).off("mousemove.mattiaStickyCursor");
+
+    if (isTouchDevice) {
+        $('.mouse-pos-list-image, .mouse-pos-list-btn, .mouse-pos-list-span, .mouse-pos-list-span-big')
+            .removeClass('active active-big hover pressed');
+        return;
+    }
+
+    if (document.querySelector(".mouse-pos-list-image, .mouse-pos-list-btn, .mouse-pos-list-span")) {
         stickyCursorTicker = gsap.to({}, {
-            duration: 0.0083333333,
+            duration: 0.0166666667,
             repeat: -1,
             onRepeat: function() {
 
@@ -1016,7 +992,7 @@ function initStickyCursorWithDelay() {
         });
     }
 
-    $(document).off("mousemove.mattiaStickyCursor").on("mousemove.mattiaStickyCursor", function(e) {
+    $(document).on("mousemove.mattiaStickyCursor", function(e) {
         mouseX = e.clientX;
         mouseY = e.clientY;
     });
@@ -1024,16 +1000,13 @@ function initStickyCursorWithDelay() {
     // Animated Section Assortiment Single Floating Image
     // Source: http://jsfiddle.net/639Jj/1/ 
 
-    $(document).off('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap a').on('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap a', function() {
-        $('.mouse-pos-list-image, .mouse-pos-list-btn, .mouse-pos-list-span, .mouse-pos-list-span-big').addClass('active');
-    });
-    $(document).off('mouseleave.mattiaStickyCursor', '.mouse-pos-list-image-wrap a').on('mouseleave.mattiaStickyCursor', '.mouse-pos-list-image-wrap a', function() {
-        $('.mouse-pos-list-image, .mouse-pos-list-btn, .mouse-pos-list-span, .mouse-pos-list-span-big').removeClass('active');
-    });
-    $(document).off('mouseenter.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .next-case-btn').on('mouseenter.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .next-case-btn', function() {
+    $(document).off('mouseenter.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .mouse-pos-list-image-wrap a');
+    $(document).off('mouseleave.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .mouse-pos-list-image-wrap a');
+
+    $(document).off('mouseenter.mattiaStickyCursor', '.next-case-btn').on('mouseenter.mattiaStickyCursor', '.next-case-btn', function() {
         $('.mouse-pos-list-btn, .mouse-pos-list-span').addClass('active-big');
     });
-    $(document).off('mouseleave.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .next-case-btn').on('mouseleave.mattiaStickyCursor', '.single-tile-wrap a, .mouse-pos-list-archive a, .next-case-btn', function() {
+    $(document).off('mouseleave.mattiaStickyCursor', '.next-case-btn').on('mouseleave.mattiaStickyCursor', '.next-case-btn', function() {
         $('.mouse-pos-list-btn, .mouse-pos-list-span').removeClass('active-big');
     });
     $('main').off('mousedown.mattiaStickyCursor').on('mousedown.mattiaStickyCursor', function() {
@@ -1043,32 +1016,10 @@ function initStickyCursorWithDelay() {
         $(".mouse-pos-list-btn, .mouse-pos-list-span").removeClass('pressed');
     });
 
-    $(document).off('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap li.visible').on('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap li.visible', function() {
-
-        var $elements = $(".mouse-pos-list-image-wrap li.visible");
-        var index = $elements.index($(this));
-        var count = $(".mouse-pos-list-image li.visible").length;
-        // var index =  $(this).index();
-        if ($(".float-image-wrap")) {
-            gsap.to($(".float-image-wrap"), {
-                y: (index * 100) / (count * -1) + "%",
-                duration: 0.6,
-                ease: "power2.inOut"
-            });
-        }
-        $(".mouse-pos-list-image.active .mouse-pos-list-image-bounce").addClass("active").delay(400).queue(function(next) {
-            $(this).removeClass("active");
-            next();
-        });
-
-    });
-
-    $(document).off('mouseenter.mattiaStickyCursor', '.archive-work-grid li').on('mouseenter.mattiaStickyCursor', '.archive-work-grid li', function() {
-        $(".mouse-pos-list-btn").addClass("hover").delay(100).queue(function(next) {
-            $(this).removeClass("hover");
-            next();
-        });
-    });
+    $(document).off('mouseenter.mattiaStickyCursor', '.mouse-pos-list-image-wrap li.visible');
+    $(document).off('mouseenter.mattiaStickyCursor', '.archive-work-grid li');
+    $('.mouse-pos-list-image, .mouse-pos-list-btn, .mouse-pos-list-span, .mouse-pos-list-span-big')
+        .removeClass('active active-big hover pressed');
 
 }
 
@@ -1509,7 +1460,6 @@ function initLazyLoad() {
     var lazyLoadInstance = new LazyLoad({
         elements_selector: ".lazy",
         callback_loaded: function() {
-            scheduleScrollRefresh();
             scheduleScrollRefresh(200);
         },
         callback_finish: function() {
