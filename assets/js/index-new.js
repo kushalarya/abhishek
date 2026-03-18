@@ -522,17 +522,34 @@ function initScript() {
     initCheckTouchDevice();
     initHamburgerNav();
     // initDynamicNotch(); // removed
-    initMagneticButtons();
-    initStickyCursorWithDelay();
-    initVisualFilter();
+    if (document.querySelector('.magnetic')) {
+        initMagneticButtons();
+    }
+    if (document.querySelector('.mouse-pos-list-image, .mouse-pos-list-btn, .mouse-pos-list-span')) {
+        initStickyCursorWithDelay();
+    }
+    if (document.querySelector('.toggle-row .btn, .grid-row .btn')) {
+        initVisualFilter();
+    }
     initScrolltriggerNav();
-    initScrollLetters();
-    initTricksWords();
-    initContactForm();
-    initTimeZone();
-    initLazyLoad();
-    initPlayVideoInview();
-    initScrolltriggerAnimations();
+    if (document.querySelector('.big-name .name-wrap, .rollingText02')) {
+        initScrollLetters();
+    }
+    if (document.querySelector('.span-lines')) {
+        initTricksWords();
+    }
+    if (document.querySelector('.field')) {
+        initContactForm();
+    }
+    if (document.querySelector('.lazy')) {
+        initLazyLoad();
+    }
+    if (document.querySelector('.playpauze video')) {
+        initPlayVideoInview();
+    }
+    if (document.querySelector('.footer-wrap, .span-lines.animate, .fade-in.animate, .awwwards-badge, .home-header .arrow, .footer-footer-wrap, .footer-case-wrap, .about-image .single-about-image, .about-services, .digital-ball .globe')) {
+        initScrolltriggerAnimations();
+    }
     scheduleScrollRefresh();
     scheduleScrollRefresh(250);
 }
@@ -1400,55 +1417,6 @@ function initContactForm() {
  */
 function initDynamicNotch() {
     // Removed
-}
-
-/**
- * Footer Time Zone
- */
-function initTimeZone() {
-
-    // Time zone
-    // https://stackoverflow.com/questions/39418405/making-a-live-clock-in-javascript/67149791#67149791
-    // https://stackoverflow.com/questions/8207655/get-time-of-specific-timezone
-    // https://stackoverflow.com/questions/63572780/how-to-update-intl-datetimeformat-with-new-date
-
-    const timeSpan = document.querySelector("#timeSpan");
-    const copyrightYear = document.querySelector(".credits p:nth-of-type(2)");
-
-    const optionsTime = {
-        timeZone: 'Asia/Kolkata',
-        timeZoneName: 'short',
-        // year: 'numeric',
-        // month: 'numeric',
-        // day: 'numeric',
-        hour: '2-digit',
-        hour12: 'true',
-        minute: 'numeric',
-        // second: 'numeric',
-    };
-
-    const formatter = new Intl.DateTimeFormat([], optionsTime);
-    
-    // Aggiorna l'anno del copyright una sola volta all'avvio
-    updateCopyrightYear();
-    
-    // Aggiorna l'orologio ogni secondo
-    updateTime();
-    if (window.__mattiaClockInterval) {
-        window.clearInterval(window.__mattiaClockInterval);
-    }
-    window.__mattiaClockInterval = window.setInterval(updateTime, 1000);
-
-    function updateTime() {
-        const dateTime = new Date();
-        const formattedDateTime = formatter.format(dateTime);
-        timeSpan.textContent = formattedDateTime;
-    }
-    
-    function updateCopyrightYear() {
-        const currentYear = new Date().getFullYear();
-        copyrightYear.textContent = `${currentYear} \u00A9 Edition`;
-    }
 }
 
 /**
