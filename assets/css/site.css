@@ -620,25 +620,115 @@ html.has-scroll-dragging {
 }
 
 /* ------------------------- Colors -------------------------------------------------- */
+/*
+ * PALETTE — raw colour tokens. Change a value here and it cascades everywhere.
+ *
+ *   60% → primary dark base   (#000025)
+ *   30% → ONE discipline color per section (swim / bike / run)
+ *   10% → accent highlight
+ *
+ *   Rule: Use all 3 together ONLY for the hero headline & gradient identity.
+ *         Everywhere else: one color at a time.
+ */
 
 :root {
-    --color-dark: #1C1D20;
-    --color-dark-dark: #141517;
-    --color-light: #FFFFFF;
-    --color-blue: #455CE9;
-    --color-blue-dark: #334BD3;
-    --color-gray: #999D9E;
-    --color-yellow: #e9d245;
-    --color-lightgray: #E9EAEB;
-    --color-white: #FFFFFF;
-    --color-border: rgba(28, 29, 32, 0.175);
-    --color-border-solid: #D2D2D2;
-    --color-border-light: rgba(255, 255, 255, 0.2);
-    --color-border-solid-light: #545557;
-    --color-text: #1C1D20;
-    --color-text-light: #FFF;
-    --alert-error: #ff4444;
-    --alert-success: #24C958;
+
+    /* ── 1. RAW PALETTE TOKENS ──────────────────────────────────────────── */
+
+    /* Base (60%) */
+    --palette-primary:          #000025;   /* deep navy */
+    --palette-primary-deep:     #000018;
+    --palette-surface:          #0A0B2E;   /* card/panel lift */
+    --palette-card:             #12133A;   /* inner card */
+    --palette-border-depth:     #1E204A;   /* subtle border */
+
+    /* Swim — deeper water blue (not neon) */
+    --palette-swim:             #3AA6D0;
+    --palette-swim-dark:        #2D8AAD;
+
+    /* Bike — warm gold (not neon yellow) */
+    --palette-bike:             #C9A227;
+    --palette-bike-dark:        #A8841A;
+
+    /* Run — burnt red (not neon red) */
+    --palette-run:              #D94A3A;
+    --palette-run-dark:         #B83A2C;
+
+    /* Hero gradient — use ONLY for headline/divider/logo identity */
+    --gradient-triathlon:       linear-gradient(90deg, var(--palette-swim), var(--palette-bike), var(--palette-run));
+
+    /* Text */
+    --palette-text:             #E6E8F2;
+    --palette-muted:            #8A8FB2;
+
+    /* Neutral */
+    --palette-white:            #FFFFFF;
+    --palette-gray:             #999D9E;
+    --palette-gray-light:       #E9EAEB;
+    --palette-gray-mid:         #D2D2D2;
+    --palette-gray-dark:        #545557;
+
+    /* Status */
+    --palette-error:            #ff4444;
+    --palette-success:          #24C958;
+    --palette-live:             #29f77a;
+    --palette-live-hover:       #49ff96;
+    --palette-live-glow:        #00ff6f;
+    --palette-live-hover:       #49ff96;
+    --palette-live-glow:        #00ff6f;
+
+
+    /* ── 2. SEMANTIC ROLE VARIABLES ─────────────────────────────────────── */
+    /*    These are what you use in components. Swap a palette token above    */
+    /*    and every component that uses the role updates automatically.       */
+
+    /* Backgrounds */
+    --color-bg:                 var(--palette-primary);
+    --color-bg-deep:            var(--palette-primary-deep);
+    --color-bg-light:           var(--palette-white);
+    --color-bg-subtle:          var(--palette-gray-light);
+
+    /* Text */
+    --color-text:               var(--palette-primary);
+    --color-text-light:         var(--palette-white);
+    --color-text-muted:         var(--palette-gray);
+
+    /* Interactive / CTA */
+    --color-primary:            var(--palette-swim);
+    --color-primary-hover:      var(--palette-swim-dark);
+
+    /* Highlight / Badge */
+    --color-secondary:          var(--palette-bike);
+    --color-secondary-text:     var(--palette-bike-dark);
+
+    /* Borders */
+    --color-border:             rgba(28, 29, 32, 0.175);
+    --color-border-solid:       var(--palette-gray-mid);
+    --color-border-light:       rgba(255, 255, 255, 0.2);
+    --color-border-solid-light: var(--palette-gray-dark);
+
+    /* Status */
+    --color-error:              var(--palette-error);
+    --color-success:            var(--palette-success);
+    --color-accent-green:       var(--palette-live);
+    --color-accent-green-hover: var(--palette-live-hover);
+    --color-accent-green-sonar: var(--palette-live-glow);
+
+
+    /* ── 3. LEGACY ALIASES ──────────────────────────────────────────────── */
+    /*    Keep old variable names working so no other CSS needs touching.    */
+
+    --color-dark:               var(--palette-primary);
+    --color-dark-dark:          var(--palette-primary-deep);
+    --color-light:              var(--palette-white);
+    --color-white:              var(--palette-white);
+    --color-blue:               var(--palette-swim);
+    --color-blue-dark:          var(--palette-swim-dark);
+    --color-yellow:             var(--palette-bike);
+    --color-gray:               var(--palette-gray);
+    --color-lightgray:          var(--palette-gray-light);
+    --alert-error:              var(--palette-error);
+    --alert-success:            var(--palette-success);
     --animation-primary: all .5s cubic-bezier(.7, 0, .3, 1);
     --animation-fast: all .3s cubic-bezier(.7, 0, .3, 1);
     --animation-smooth: all .7s cubic-bezier(.7, 0, .3, 1);
@@ -668,6 +758,16 @@ html.has-scroll-dragging {
         --section-padding: max(2.5em, 12vh);
     }
 }
+
+/* ------------------------- Triathlon Word Colors ---------------------------------- */
+/*
+ * Default: all words are muted. Only the .active word lights up.
+ * Cycle with JS or on scroll to create focus & progression.
+ */
+
+.home-header .big-name h1 .swim { color: var(--palette-swim); }
+.home-header .big-name h1 .bike { color: var(--palette-bike); }
+.home-header .big-name h1 .run  { color: var(--palette-run);  }
 
 /* ------------------------- Body -------------------------------------------------- */
 
@@ -1277,7 +1377,7 @@ video.overlay {
 }
 
 .btn-round .btn-text-inner {
-    color: #fff;
+    color: var(--color-white);
 }
 
 .btn-round .btn-fill {
@@ -1765,7 +1865,7 @@ main .btn-hamburger.active {
 }
 
 .color-box.white {
-    background: #fff;
+    background: var(--color-white);
     box-shadow: inset 0 0 0 1px var(--color-border);
 }
 
@@ -2463,7 +2563,7 @@ main {
     height: 100vh;
     overflow: hidden;
     z-index: 90;
-    background: #FFF;
+    background: var(--color-white);
     visibility: hidden;
     opacity: 0;
 }
@@ -3000,7 +3100,7 @@ main {
     transform: translateY(-1px) rotate(.001deg);
     background: transparent;
     border-color: transparent;
-    color: #fff;
+    color: var(--color-white);
 }
 
 .dynamic-notch-links .btn-link.btn-link-external .btn-click:hover::after,
@@ -3010,7 +3110,7 @@ main {
 
 .dynamic-notch-links .btn-link .btn-click:hover .btn-text-inner,
 .dynamic-notch-links .btn-link .btn-click:focus-visible .btn-text-inner {
-    color: #fff;
+    color: var(--color-white);
 }
 
 .dynamic-notch-mobile-available {
@@ -3046,7 +3146,7 @@ main {
 
 .dynamic-notch-available .btn-text-inner,
 .dynamic-notch-mobile-available .btn-text-inner {
-    color: #29f77a;
+    color: var(--color-accent-green);
     font-size: 13px;
     line-height: 1.4;
     font-weight: 500;
@@ -3057,7 +3157,7 @@ main {
 .dynamic-notch-available.btn-link.btn-link-external .btn-click::after,
 .dynamic-notch-mobile-available.btn-link.btn-link-external .btn-click::after {
     bottom: -1px;
-    background: rgba(41, 247, 122, .6);
+    background: color-mix(in srgb, var(--color-accent-green) 60%, transparent);
 }
 
 .dynamic-notch-available a:hover,
@@ -3078,17 +3178,17 @@ main {
 .dynamic-notch-available .btn-click:focus-visible .btn-text-inner,
 .dynamic-notch-mobile-available .btn-click:hover .btn-text-inner,
 .dynamic-notch-mobile-available .btn-click:focus-visible .btn-text-inner {
-    color: #49ff96;
+    color: var(--color-accent-green-hover);
 }
 
 .dynamic-notch-sonar {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #00ff6f;
+    background: var(--color-accent-green-sonar);
     display: inline-block;
     position: relative;
-    box-shadow: 0 0 8px rgba(0, 255, 111, .65), 0 0 14px rgba(0, 255, 111, .32);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent-green-sonar) 65%, transparent), 0 0 14px color-mix(in srgb, var(--color-accent-green-sonar) 32%, transparent);
     isolation: isolate;
 }
 
