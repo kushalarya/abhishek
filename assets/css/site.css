@@ -3904,8 +3904,8 @@ main {
     .footer .profile-picture,
     .footer .profile-picture-bw {
         margin-right: .125em;
-        height: 2.4em;
-        width: 2.4em;
+        height: 10em;
+        width: 10em;
         transform: translateY(.1em);
         background: url("../img/profile_circular_notion.png") center center no-repeat;
         background-size: cover;
